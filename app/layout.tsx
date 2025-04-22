@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
+
 import localFont from "next/font/local";
 import { ReactNode } from "react";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
 
 const ibmPlexSans = localFont({
   src: [
     { path: "/fonts/IBMPlexSans-Regular.ttf", weight: "400", style: "normal" },
+    { path: "/fonts/IBMPlexSans-Medium.ttf", weight: "500", style: "normal" },
+    { path: "/fonts/IBMPlexSans-SemiBold.ttf", weight: "600", style: "normal" },
     { path: "/fonts/IBMPlexSans-Bold.ttf", weight: "700", style: "normal" },
-    // { path: "/fonts/IBMPlexSans-Italic.ttf", weight: "400", style: "italic" },
-    // {
-    //   path: "/fonts/IBMPlexSans-BoldItalic.ttf",
-    //   weight: "700",
-    //   style: "italic",
-    // },
   ],
 });
 
@@ -24,18 +24,25 @@ const bebasNeue = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Library Management System",
-  description: "Book borrowing system for university library",
+  title: "Ayesha Abed Library",
+  description:
+    "Welcome to the Ayesha Abed Library, where you can find the library facility of BRACU.",
 };
 
-const RootLayout = ({ children }: { children: ReactNode }) => {
+const RootLayout = async ({ children }: { children: ReactNode }) => {
+  const session = await auth();
+
   return (
     <html lang="en">
-      <body
-        className={`${ibmPlexSans.className} ${bebasNeue.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <SessionProvider session={session}>
+        <body
+          className={`${ibmPlexSans.className} ${bebasNeue.variable} antialiased`}
+        >
+          {children}
+
+          <Toaster />
+        </body>
+      </SessionProvider>
     </html>
   );
 };
