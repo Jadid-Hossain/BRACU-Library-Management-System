@@ -1,50 +1,59 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import * as AvatarPrimitive from "@radix-ui/react-avatar"
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn, getInitials } from "@/lib/utils";
+import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { signOut } from "@/auth";
+import { Button } from "@/components/ui/button";
+import { Session } from "next-auth";
 
-import { cn } from "@/lib/utils"
+const Header = ({ session }: { session: Session }) => {
+  const pathname = usePathname();
+  return (
+    <header className="my-10 flex justify-between gap-5">
+      <Link href="/">
+        <Image src="/icons/logo.svg" alt="logo" width={40} height={40} />
+      </Link>
 
-const Avatar = React.forwardRef<
-  React.ComponentRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Root
-    ref={ref}
-    className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className
-    )}
-    {...props}
-  />
-))
-Avatar.displayName = AvatarPrimitive.Root.displayName
+      <ul className="flex flex-row items-center gap-8">
+        {/*<li>*/}
+        {/*  <form*/}
+        {/*    action={async () => {*/}
+        {/*      "use server";*/}
 
-const AvatarImage = React.forwardRef<
-  React.ComponentRef<typeof AvatarPrimitive.Image>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Image
-    ref={ref}
-    className={cn("aspect-square h-full w-full", className)}
-    {...props}
-  />
-))
-AvatarImage.displayName = AvatarPrimitive.Image.displayName
+        {/*      await signOut();*/}
+        {/*    }}*/}
+        {/*    className="mb-10"*/}
+        {/*  >*/}
+        {/*    <Button>Logout</Button>*/}
+        {/*  </form>*/}
+        {/*</li>*/}
+        <li>
+          <Link
+            href="/library"
+            className={cn(
+              "text-base cursor-pointer capitalize",
+              pathname === "/library" ? "text-light-200" : "text-light-100",
+            )}
+          >
+            Library
+          </Link>
+        </li>
+        <li>
+          <Link href="/my-profile">
+            <Avatar>
+              <AvatarFallback className="bg-amber-100">
+                {getInitials(session?.user?.name || "IN")}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        </li>
+      </ul>
+    </header>
+  );
+};
 
-const AvatarFallback = React.forwardRef<
-  React.ComponentRef<typeof AvatarPrimitive.Fallback>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Fallback
-    ref={ref}
-    className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-muted",
-      className
-    )}
-    {...props}
-  />
-))
-AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
-
-export { Avatar, AvatarImage, AvatarFallback }
+export default Header;
