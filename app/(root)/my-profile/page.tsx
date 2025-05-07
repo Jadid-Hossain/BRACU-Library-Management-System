@@ -1,17 +1,14 @@
-// app/your-path/page.tsx
 import React from "react";
 import { signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
 import BookList from "@/components/BookList";
 import { db } from "@/database/drizzle";
 import { books as booksTable } from "@/database/schema";
-import type { Book } from "@/types";
+// import type { Book } from "@/types";
 
 export default async function Page() {
-  // 1) Fetch all books from Postgres via Drizzle
   const allBooks = await db.select().from(booksTable);
 
-  // 2) Map to your UI Book type (adding `video` alias for `videoUrl`)
   const books: Book[] = allBooks.map((b) => ({
     id: b.id,
     title: b.title,
@@ -23,8 +20,8 @@ export default async function Page() {
     description: b.description,
     coverUrl: b.coverUrl,
     coverColor: b.coverColor,
-    video: b.videoUrl, // <-- your BookList expects `.video`
-    videoUrl: b.videoUrl, // <-- if your `Book` type still has `.videoUrl`
+    video: b.videoUrl,
+    videoUrl: b.videoUrl,
     summary: b.summary,
     createdAt: b.createdAt,
   }));

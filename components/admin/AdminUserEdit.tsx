@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUser } from "@/lib/admin/actions/user";
 import { toast } from "@/hooks/use-toast";
+import FileUpload from "@/components/FileUpload";
 
 import {
   Form,
@@ -136,9 +137,17 @@ export default function AdminUserEdit({ initialUser }: Props) {
               name="universityCard"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>University Card</FormLabel>
+                  <FormLabel>University ID Card</FormLabel>
                   <FormControl>
-                    <Input {...field} required />
+                    <FileUpload
+                      type="image"
+                      accept="image/*"
+                      placeholder="Upload university card..."
+                      folder="users/cards"
+                      variant="light"
+                      value={field.value}
+                      onFileChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
