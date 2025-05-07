@@ -1,44 +1,77 @@
 import React from "react";
-import { signOut } from "@/auth";
-import { Button } from "@/components/ui/button";
-import BookList from "@/components/BookList";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import { db } from "@/database/drizzle";
-import { books as booksTable } from "@/database/schema";
-// import type { Book } from "@/types";
+import { borrowRecords, books as booksTable } from "@/database/schema";
+import { eq, and } from "drizzle-orm";
+import { Button } from "@/components/ui/button";
+import { signOut } from "@/auth";
+import BookCard from "@/components/BookCard";
+import dayjs from "dayjs";
 
-export default async function Page() {
-  const allBooks = await db.select().from(booksTable);
+export default async function MyProfilePage() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/sign-in");
+  }
+  const userId = session.user.id;
 
-  const books: Book[] = allBooks.map((b) => ({
-    id: b.id,
-    title: b.title,
-    author: b.author,
-    genre: b.genre,
-    rating: b.rating,
-    totalCopies: b.totalCopies,
-    availableCopies: b.availableCopies,
-    description: b.description,
-    coverUrl: b.coverUrl,
-    coverColor: b.coverColor,
-    video: b.videoUrl,
-    videoUrl: b.videoUrl,
-    summary: b.summary,
-    createdAt: b.createdAt,
-  }));
+  const records = await db
+    .select({
+      book: {
+        id: booksTable.id,
+        title: booksTable.title,
+        author: booksTable.author,
+        genre: booksTable.genre,
+        rating: booksTable.rating,
+        totalCopies: booksTable.totalCopies,
+        availableCopies: booksTable.availableCopies,
+        description: booksTable.description,
+        coverUrl: booksTable.coverUrl,
+        coverColor: booksTable.coverColor,
+        videoUrl: booksTable.videoUrl,
+        summary: booksTable.summary,
+        createdAt: booksTable.createdAt,
+      },
+      dueDate: borrowRecords.dueDate,
+    })
+    .from(borrowRecords)
+    .innerJoin(booksTable, eq(borrowRecords.bookId, booksTable.id))
+    .where(
+      and(
+        eq(borrowRecords.userId, userId),
+        eq(borrowRecords.status, "BORROWED"),
+      ),
+    );
+
+  const booksForList = records.map((r) => {
+    const due = dayjs(r.dueDate);
+    const today = dayjs().startOf("day");
+    const daysLeft = due.diff(today, "day");
+
+    return {
+      ...r.book,
+      video: r.book.videoUrl,
+      isLoanedBook: true,
+      daysLeft,
+    };
+  });
 
   return (
-    <div>
-      <form
-        action={async () => {
-          "use server";
-          await signOut();
-        }}
-        className="mb-10"
-      >
-        <Button>Logout</Button>
-      </form>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4 text-gray-200">
+        My Borrowed Books
+      </h1>
 
-      <BookList title="Borrowed Books" books={books} />
+      {booksForList.length > 0 ? (
+        <ul className="book-list">
+          {booksForList.map((book) => (
+            <BookCard key={book.id} {...book} />
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-300">You have no books currently borrowed.</p>
+      )}
     </div>
   );
 }

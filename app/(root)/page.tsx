@@ -16,7 +16,11 @@ const Home = async () => {
 
   return (
     <>
-      <BookOverview {...latestBooks[0]} userId={session?.user?.id as string} />
+      <BookOverview
+        {...latestBooks[0]}
+        userId={session?.user?.id as string}
+        showBorrowButton={false}
+      />
 
       <BookList
         title="Latest Books"

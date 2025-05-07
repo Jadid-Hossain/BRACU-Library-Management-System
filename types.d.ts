@@ -12,6 +12,9 @@ interface Book {
   videoUrl: string;
   summary: string;
   createdAt: Date | null;
+  video?: string;
+  isLoanedBook?: boolean;
+  daysLeft?: number;
 }
 
 interface AuthCredentials {
@@ -33,4 +36,14 @@ interface BookParams {
   totalCopies: number;
   videoUrl: string;
   summary: string;
+}
+
+interface BorrowBookParams {
+  bookId: string;
+  userId: string;
+}
+
+interface ReturnBookParams {
+  recordId: string;
+  bookId: string;
 }

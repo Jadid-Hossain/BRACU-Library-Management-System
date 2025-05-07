@@ -5,13 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
 import Image from "next/image";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { signOut } from "@/auth";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Session } from "next-auth";
+import { logout } from "@/lib/actions/auth";
 
 const Header = ({ session }: { session: Session }) => {
   const pathname = usePathname();
+  const isProfilePage = pathname === "/my-profile";
+
   return (
     <header className="my-10 flex justify-between gap-5">
       <Link href="/">
@@ -19,18 +21,6 @@ const Header = ({ session }: { session: Session }) => {
       </Link>
 
       <ul className="flex flex-row items-center gap-8">
-        {/*<li>*/}
-        {/*  <form*/}
-        {/*    action={async () => {*/}
-        {/*      "use server";*/}
-
-        {/*      await signOut();*/}
-        {/*    }}*/}
-        {/*    className="mb-10"*/}
-        {/*  >*/}
-        {/*    <Button>Logout</Button>*/}
-        {/*  </form>*/}
-        {/*</li>*/}
         <li>
           <Link
             href="/library"
@@ -42,6 +32,7 @@ const Header = ({ session }: { session: Session }) => {
             Library
           </Link>
         </li>
+
         {pathname !== "/search" && (
           <li>
             <Link
@@ -56,7 +47,7 @@ const Header = ({ session }: { session: Session }) => {
           </li>
         )}
 
-        <li>
+        <li className="flex items-center gap-4">
           <Link href="/my-profile">
             <Avatar>
               <AvatarFallback className="bg-amber-100">
@@ -64,6 +55,14 @@ const Header = ({ session }: { session: Session }) => {
               </AvatarFallback>
             </Avatar>
           </Link>
+
+          {isProfilePage && (
+            <form action={logout}>
+              <Button size="sm" className="text-sm">
+                Logout
+              </Button>
+            </form>
+          )}
         </li>
       </ul>
     </header>
