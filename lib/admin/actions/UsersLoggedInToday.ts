@@ -1,4 +1,3 @@
-// lib/admin/queries/getUsersLoggedInToday.ts
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { borrowBook } from "@/lib/actions/book";
+import { useRouter } from "next/navigation";
 
 interface Props {
   userId: string;
@@ -23,6 +24,8 @@ const BorrowBook = ({
   const [showDialog, setShowDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
 
+  const router = useRouter();
+
   const handleBorrowBook = async () => {
     if (!isEligible) {
       setShowDialog(true);
@@ -37,6 +40,7 @@ const BorrowBook = ({
 
       if (result.success) {
         console.log("Book borrowed successfully");
+        router.refresh();
       } else {
         setShowDialog(true);
         setDialogMessage(
@@ -68,7 +72,6 @@ const BorrowBook = ({
         </p>
       </Button>
 
-      {/* Dialog */}
       {showDialog && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg max-w-sm w-full">

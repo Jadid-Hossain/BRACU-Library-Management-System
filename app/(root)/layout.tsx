@@ -6,6 +6,7 @@ import { after } from "next/server";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { autoFineOverdues } from "@/lib/admin/actions/autoFine";
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
@@ -14,7 +15,6 @@ const Layout = async ({ children }: { children: ReactNode }) => {
 
   after(async () => {
     if (!session?.user?.id) return;
-
     const user = await db
       .select()
       .from(users)
@@ -28,6 +28,10 @@ const Layout = async ({ children }: { children: ReactNode }) => {
       .update(users)
       .set({ lastActivityDate: new Date().toISOString().slice(0, 10) })
       .where(eq(users.id, session?.user?.id));
+    console.log("Updated lastActivityDate for user", session.user.id);
+
+    const result = await autoFineOverdues();
+    console.log("autoFineOverdues result:", result);
   });
 
   return (
