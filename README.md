@@ -34,3 +34,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Library Management Features
+This branch adds library management features:
+
+1. Facility booking system
+2. Contact pages
+3. Library information pages
+4. Research help pages
+5. Similarity checking pages
+6. Membership management
+
+### Voiceflow Integration
+To integrate the Voiceflow chatbot, add the script from oiceflow-script.html to the layout component.
+
+### Dependencies
+Install additional dependencies:
+`ash
+npm install @neondatabase/serverless pg react-datepicker react-select
+`
