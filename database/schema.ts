@@ -24,6 +24,13 @@ export const FINE_STATUS_ENUM = pgEnum("fine_status", [
   "PAID",
   "WAIVED",
 ]);
+export const RESERVATION_STATUS_ENUM = pgEnum("reservation_status", [
+  "WAITING",
+  "READY",
+  "BORROWED",
+  "EXPIRED",
+  "CANCELLED",
+]);
 
 export const users = pgTable("users", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
@@ -71,6 +78,23 @@ export const borrowRecords = pgTable("borrow_records", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
+export const reservations = pgTable("reservations", {
+  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
+  bookId: uuid("book_id")
+    .references(() => books.id)
+    .notNull(),
+  reservationDate: timestamp("reservation_date", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  expiryDate: timestamp("expiry_date", { withTimezone: true }),
+  status: RESERVATION_STATUS_ENUM("status").default("WAITING").notNull(),
+  position: integer("position").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
 export const fines = pgTable("fines", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
   userId: uuid("user_id")
@@ -88,3 +112,5 @@ export const fines = pgTable("fines", {
     .notNull(),
   paidAt: timestamp("paid_at", { withTimezone: true }),
 });
+
+

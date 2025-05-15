@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Session } from "next-auth";
 import { logout } from "@/lib/actions/auth";
+import { NotificationIcon } from "@/components/notifications/NotificationIcon";
 
 const Header = ({ session }: { session: Session }) => {
   const pathname = usePathname();
@@ -46,6 +47,10 @@ const Header = ({ session }: { session: Session }) => {
             </Link>
           </li>
         )}
+
+        <li>
+          <NotificationIcon />
+        </li>
 
         <li className="flex items-center gap-4">
           <Link href="/my-profile">

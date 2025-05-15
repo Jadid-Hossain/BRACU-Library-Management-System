@@ -1,19 +1,33 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
+  "version": "5",
+  "dialect": "pg",
   "entries": [
     {
       "idx": 0,
-      "version": "7",
-      "when": 1745321885929,
+      "version": "5",
+      "when": 1701362881831,
       "tag": "0000_useful_maelstrom",
       "breakpoints": true
     },
     {
       "idx": 1,
-      "version": "7",
-      "when": 1746641993411,
+      "version": "5",
+      "when": 1701370522291,
       "tag": "0001_eager_tony_stark",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5", 
+      "when": 1701370792291,
+      "tag": "0002_notification_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1718021000000,
+      "tag": "0003_reservation_schema",
       "breakpoints": true
     }
   ]

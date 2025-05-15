@@ -7,10 +7,12 @@ import {
   books as booksTable,
   borrowRecords,
   fines as finesTable,
+  reservations,
 } from "@/database/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, not } from "drizzle-orm";
 import BookCard from "@/components/BookCard";
 import FineList, { FineItem } from "@/components/FineList";
+import UserReservations from "@/components/UserReservations";
 import dayjs from "dayjs";
 
 export default async function MyProfilePage() {
@@ -103,6 +105,33 @@ export default async function MyProfilePage() {
     borrowStatus: f.borrowStatus,
   }));
 
+  // Get user's active reservations
+  const userReservations = await db
+    .select({
+      id: reservations.id,
+      bookId: booksTable.id,
+      bookTitle: booksTable.title,
+      reservationDate: reservations.reservationDate,
+      expiryDate: reservations.expiryDate,
+      status: reservations.status,
+      position: reservations.position,
+    })
+    .from(reservations)
+    .innerJoin(booksTable, eq(reservations.bookId, booksTable.id))
+    .where(
+      and(
+        eq(reservations.userId, userId),
+        not(eq(reservations.status, "CANCELLED")),
+        not(eq(reservations.status, "BORROWED"))
+      )
+    );
+
+  const reservationsList = userReservations.map(r => ({
+    ...r,
+    reservationDate: r.reservationDate.toISOString(),
+    expiryDate: r.expiryDate ? r.expiryDate.toISOString() : null,
+  }));
+
   return (
     <div className="p-6 space-y-8">
       {userStatus === "REJECTED" && hasUnpaidFines && (
@@ -125,6 +154,11 @@ export default async function MyProfilePage() {
         ) : (
           <p className="text-gray-300">You have no books currently borrowed.</p>
         )}
+      </section>
+
+      {/* Reservations Section */}
+      <section className="max-w-5xl mx-auto">
+        <UserReservations reservations={reservationsList} />
       </section>
 
       {/* Fines Section */}

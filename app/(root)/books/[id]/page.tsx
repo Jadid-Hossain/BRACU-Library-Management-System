@@ -1,6 +1,6 @@
 import React from "react";
 import { db } from "@/database/drizzle";
-import { books, borrowRecords } from "@/database/schema";
+import { books, borrowRecords, reservations } from "@/database/schema";
 import { eq, and } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
@@ -8,6 +8,8 @@ import BookOverview from "@/components/BookOverview";
 import BookVideo from "@/components/BookVideo";
 import BorrowBook from "@/components/BorrowBook";
 import ReturnBook from "@/components/ReturnBook";
+import ReserveBook from "@/components/ReserveBook";
+import ReservationStatus from "@/components/ReservationStatus";
 import dayjs from "dayjs";
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -40,6 +42,22 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     )
     .limit(1);
 
+  // Check if user has a READY reservation for this book
+  const [readyReservation] = await db
+    .select({
+      id: reservations.id,
+      expiryDate: reservations.expiryDate,
+    })
+    .from(reservations)
+    .where(
+      and(
+        eq(reservations.bookId, id),
+        eq(reservations.userId, userId),
+        eq(reservations.status, "READY"),
+      ),
+    )
+    .limit(1);
+
   return (
     <>
       <BookOverview {...bookDetails} userId={userId} showBorrowButton={false} />
@@ -64,7 +82,10 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
         {/* Borrow or Return Section */}
         <div>
-          {!record && bookDetails.availableCopies > 0 && (
+          {/* Show borrow button if:
+              - No current borrow
+              - Book is available OR user has a READY reservation */}
+          {!record && (bookDetails.availableCopies > 0 || readyReservation) && (
             <BorrowBook
               userId={userId}
               bookId={id}
@@ -75,6 +96,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
             />
           )}
 
+          {/* Show current borrow details */}
           {record && (
             <section className="mt-10">
               <h3 className="text-xl font-semibold text-gray-200">
@@ -99,10 +121,19 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
             </section>
           )}
 
-          {!record && bookDetails.availableCopies === 0 && (
-            <p className="mt-4 text-gray-400">
-              This book is currently unavailable.
-            </p>
+          {/* Show reservation button when book is unavailable and user doesn't have a current borrow */}
+          {!record && bookDetails.availableCopies === 0 && !readyReservation && (
+            <div className="mt-4">
+              <p className="mb-4 text-gray-400">
+                This book is currently unavailable. You can reserve it to get in line.
+              </p>
+              <ReserveBook userId={userId} bookId={id} />
+            </div>
+          )}
+
+          {/* Reservation Status */}
+          {!record && (
+            <ReservationStatus userId={userId} bookId={id} />
           )}
         </div>
       </div>

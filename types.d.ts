@@ -39,11 +39,27 @@ interface BookParams {
 }
 
 interface BorrowBookParams {
-  bookId: string;
   userId: string;
+  bookId: string;
 }
 
 interface ReturnBookParams {
   recordId: string;
   bookId: string;
+}
+
+interface ReserveBookParams {
+  userId: string;
+  bookId: string;
+}
+
+interface Reservation {
+  id: string;
+  userId: string;
+  bookId: string;
+  reservationDate: Date;
+  expiryDate?: Date;
+  status: "WAITING" | "READY" | "BORROWED" | "EXPIRED" | "CANCELLED";
+  position: number;
+  createdAt: Date;
 }
