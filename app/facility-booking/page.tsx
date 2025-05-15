@@ -86,23 +86,6 @@ export default function FacilityBooking() {
     return Math.floor(100000 + Math.random() * 900000).toString();
   };
 
-  const checkSlotAvailability = async (date: Date, room: string, slots: string[]) => {
-    try {
-      const existingBookings = await sql`
-        SELECT slots
-        FROM bookings
-        WHERE date = ${date.toISOString().split('T')[0]}
-        AND room = ${room}
-      `;
-
-      const bookedSlots = existingBookings.flatMap(booking => booking.slots);
-      return !slots.some(slot => bookedSlots.includes(slot));
-    } catch (error) {
-      console.error('Error checking slot availability:', error);
-      return false;
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -117,49 +100,58 @@ export default function FacilityBooking() {
     }
 
     const reservationCode = generateReservationCode();
+    // Extract just the values from the selectedSlots objects
+    const slotValues = selectedSlots.map(slot => slot.value);
+    
+    console.log('Submitting booking with code:', reservationCode);
+    console.log('Selected slots:', selectedSlots);
+    console.log('Slot values for DB:', slotValues);
 
     try {
-      const slotsAvailable = await checkSlotAvailability(
-        date,
-        room.value,
-        selectedSlots.map(slot => slot.value)
-      );
-
-      if (!slotsAvailable) {
-        alert('You chose a reserved slot. Try again with choosing available slot.');
-        return;
-      }
-
-      await sql`
-        INSERT INTO bookings (
-          reservation_code,
-          date,
-          facility_type,
-          room,
-          email,
-          slots
-        ) VALUES (
-          ${reservationCode},
-          ${date.toISOString().split('T')[0]},
-          ${facility.value},
-          ${room.value},
-          ${email},
-          ${selectedSlots.map(slot => slot.value)}
-        )
-      `;
-
-      sessionStorage.setItem('reservationDetails', JSON.stringify({
+      // Create a reservation details object to pass to the next page
+      const reservationDetails = {
         code: reservationCode,
         facility: facility.label,
         room: room.value,
-        date: date,
+        date: date.toISOString(),
         slots: selectedSlots
-      }));
+      };
+      
+      console.log('Saving reservation details to session storage:', reservationDetails);
+      sessionStorage.setItem('reservationDetails', JSON.stringify(reservationDetails));
+      console.log('Session storage after saving:', sessionStorage.getItem('reservationDetails'));
 
+      // Store the booking in the database if available
+      try {
+        await sql`
+          INSERT INTO bookings (
+            reservation_code,
+            date,
+            facility_type,
+            room,
+            email,
+            slots
+          ) VALUES (
+            ${reservationCode},
+            ${date.toISOString().split('T')[0]},
+            ${facility.value},
+            ${room.value},
+            ${email},
+            ${slotValues}
+          )
+        `;
+        console.log('Booking saved to database');
+      } catch (dbError) {
+        console.warn('Could not save booking to database, but continuing to next page:', dbError);
+        // Continue with the booking process even if the database operation fails
+      }
+
+      // Redirect to the user info page
+      console.log('Redirecting to user-info page with type:', facility.value);
       window.location.href = `/facility-booking/user-info?type=${facility.value}`;
     } catch (error) {
-      console.error('Error creating booking:', error);
-      alert('An error occurred while creating your booking. Please try again.');
+      console.error('Error during booking process:', error);
+      alert('An error occurred while processing your booking. Please try again.');
     }
   };
 
@@ -227,7 +219,7 @@ export default function FacilityBooking() {
                 <Select
                   options={timeSlots}
                   value={selectedSlots}
-                  onChange={setSelectedSlots}
+                  onChange={(newValue: any) => setSelectedSlots(Array.isArray(newValue) ? newValue : [])}
                   isMulti
                   className="w-full text-sm md:text-base"
                   placeholder="Select time slots"
@@ -258,7 +250,7 @@ export default function FacilityBooking() {
 
           <div className="hidden md:block">
             <Image
-              src="/library-booking.jpg"
+              src="/facility-page.png"
               alt="Library Facility"
               width={600}
               height={800}

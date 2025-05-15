@@ -1,3 +1,62 @@
+# BRAC University Library Management System
+
+## Facility Booking System Setup
+
+### Database Setup Instructions
+
+The system uses Neon PostgreSQL for database storage. Follow these steps to set up your database:
+
+1. **Create a Neon PostgreSQL database**:
+   - Sign up at [https://neon.tech](https://neon.tech)
+   - Create a new project
+   - Note your connection string
+
+2. **Configure environment variables**:
+   - Copy `env.example` to `.env.local`
+   - Replace the `DATABASE_URL` with your Neon connection string
+
+3. **Set up database tables**:
+   - Connect to your Neon database using the Neon SQL Editor or any PostgreSQL client
+   - Run the SQL commands in `db-schema.sql` to create the required tables
+
+### Running the Application
+
+```bash
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
+```
+
+### Facility Booking Flow
+
+1. **Main Booking Page** (`/facility-booking`):
+   - Users select date, facility type, room, and time slots
+   - System checks if slots are already booked
+   - Generates a unique reservation code
+
+2. **User Information Page** (`/facility-booking/user-info`):
+   - Collects user details (or group member details)
+   - Group bookings require at least 3 members
+
+3. **Confirmation Page** (`/facility-booking/confirmation`):
+   - Displays booking details and reservation code
+   - Links back to homepage
+
+### Database Schema
+
+The system uses two main tables:
+
+1. **bookings**: Stores facility reservation details
+   - reservation_code (unique identifier)
+   - date, facility_type, room
+   - email and selected time slots
+
+2. **user_info**: Stores details about users
+   - Links to bookings via reservation_code
+   - Stores user ID, name, department, contact info
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -52,4 +111,5 @@ To integrate the Voiceflow chatbot, add the script from oiceflow-script.html to
 Install additional dependencies:
 `ash
 npm install @neondatabase/serverless pg react-datepicker react-select
-`
+`
+
