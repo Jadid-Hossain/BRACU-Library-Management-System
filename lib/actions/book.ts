@@ -10,7 +10,7 @@ export const borrowBook = async (params: BorrowBookParams) => {
 
   try {
     const [user] = await db
-      .select({ status: users.status })
+      .select({ status: users.status, role: users.role })
       .from(users)
       .where(eq(users.id, userId))
       .limit(1);
@@ -30,7 +30,10 @@ export const borrowBook = async (params: BorrowBookParams) => {
     }
 
     const [book] = await db
-      .select({ availableCopies: books.availableCopies })
+      .select({
+        availableCopies: books.availableCopies,
+        createdAt: books.createdAt,
+      })
       .from(books)
       .where(eq(books.id, bookId))
       .limit(1);
@@ -39,6 +42,19 @@ export const borrowBook = async (params: BorrowBookParams) => {
       return {
         success: false,
         error: "Book is not available for borrowing",
+      };
+    }
+    // check 48 hours
+    const createdAt = dayjs(book.createdAt);
+    const now = dayjs();
+    const cutoff = createdAt.add(2, "day");
+    const inPriorityWindow = now.isBefore(cutoff);
+
+    if (inPriorityWindow && user.role !== "FACULTY") {
+      const hoursLeft = Math.ceil(cutoff.diff(now, "hour", true));
+      return {
+        success: false,
+        error: `Only faculty may borrow this book in the first 48 hours. Available in ~${hoursLeft} hour(s).`,
       };
     }
 

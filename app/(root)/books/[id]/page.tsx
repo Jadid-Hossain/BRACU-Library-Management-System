@@ -17,10 +17,25 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const userId = session.user.id;
 
   const [bookDetails] = await db
-    .select()
+    .select({
+      id: books.id,
+      title: books.title,
+      author: books.author,
+      genre: books.genre,
+      rating: books.rating,
+      totalCopies: books.totalCopies,
+      availableCopies: books.availableCopies,
+      description: books.description,
+      coverColor: books.coverColor,
+      coverUrl: books.coverUrl,
+      createdAt: books.createdAt,
+      videoUrl: books.videoUrl,
+      summary: books.summary,
+    })
     .from(books)
     .where(eq(books.id, id))
     .limit(1);
+
   if (!bookDetails) redirect("/404");
 
   const [record] = await db
