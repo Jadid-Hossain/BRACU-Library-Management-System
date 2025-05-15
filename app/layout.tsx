@@ -3,9 +3,15 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
 import localFont from "next/font/local";
+import { Inter } from 'next/font/google';
 import { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import InitSystem from './components/InitSystem';
+
+const inter = Inter({ subsets: ['latin'] });
 
 const ibmPlexSans = localFont({
   src: [
@@ -24,9 +30,16 @@ const bebasNeue = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Ayesha Abed Library",
-  description:
-    "Welcome to the Ayesha Abed Library, where you can find the library facility of BRACU.",
+  title: "BRAC University Library",
+  description: "Welcome to the Ayesha Abed Library, where you can find the library facility of BRACU.",
+  icons: {
+    icon: [
+      { url: '/uni_logo.png', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/uni_logo.png' }
+    ]
+  }
 };
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
@@ -35,12 +48,12 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
       <SessionProvider session={session}>
-        <body
-          className={`${ibmPlexSans.className} ${bebasNeue.variable} antialiased`}
-        >
+        <body className={`${inter.className} ${ibmPlexSans.className} ${bebasNeue.variable} antialiased`}>
+          <Navbar />
           {children}
-
+          <Footer />
           <Toaster />
+          <InitSystem />
         </body>
       </SessionProvider>
     </html>
