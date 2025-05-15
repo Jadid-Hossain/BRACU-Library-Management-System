@@ -7,7 +7,11 @@ import {
   varchar,
   date,
   pgEnum,
+  decimal,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { sql } from "drizzle-orm";
+import { z } from "zod";
 
 export const STATUS_ENUM = pgEnum("status", [
   "PENDING",
@@ -15,15 +19,10 @@ export const STATUS_ENUM = pgEnum("status", [
   "REJECTED",
 ]);
 export const ROLE_ENUM = pgEnum("role", ["USER", "ADMIN"]);
-export const BORROW_STATUS_ENUM = pgEnum("borrow_status", [
-  "BORROWED",
-  "RETURNED",
-]);
-export const FINE_STATUS_ENUM = pgEnum("fine_status", [
-  "PENDING",
-  "PAID",
-  "WAIVED",
-]);
+export const BORROW_STATUS = ["BORROWED", "RETURNED"] as const;
+export const BORROW_STATUS_ENUM = pgEnum("borrow_status", BORROW_STATUS);
+export const FINE_STATUS = ["PENDING", "PAID", "WAIVED"] as const;
+export const FINE_STATUS_ENUM = pgEnum("fine_status", FINE_STATUS);
 
 export const users = pgTable("users", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
@@ -51,6 +50,7 @@ export const books = pgTable("books", {
   availableCopies: integer("available_copies").notNull().default(0),
   videoUrl: text("video_url").notNull(),
   summary: varchar("summary").notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull().default("29.99"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 

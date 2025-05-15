@@ -8,6 +8,7 @@ import BookOverview from "@/components/BookOverview";
 import BookVideo from "@/components/BookVideo";
 import BorrowBook from "@/components/BorrowBook";
 import ReturnBook from "@/components/ReturnBook";
+import BuyBook from "@/components/BuyBook";
 import dayjs from "dayjs";
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -40,9 +41,15 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     )
     .limit(1);
 
+  // Convert price from decimal string to number
+  const bookDetailsWithNumberPrice = {
+    ...bookDetails,
+    price: Number(bookDetails.price),
+  };
+
   return (
     <>
-      <BookOverview {...bookDetails} userId={userId} showBorrowButton={false} />
+      <BookOverview {...bookDetailsWithNumberPrice} userId={userId} showBorrowButton={false} />
 
       <div className="book-details flex flex-col gap-10">
         {/* Video & Summary */}
@@ -99,11 +106,18 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
             </section>
           )}
 
-          {!record && bookDetails.availableCopies === 0 && (
+          {bookDetails.availableCopies === 0 && (
             <p className="mt-4 text-gray-400">
               This book is currently unavailable.
             </p>
           )}
+
+          {/* Add Buy Button */}
+          <BuyBook 
+            bookId={id} 
+            title={bookDetails.title} 
+            price={Number(bookDetails.price)} 
+          />
         </div>
       </div>
     </>

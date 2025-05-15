@@ -1,0 +1,1 @@
+ALTER TABLE "books" ADD COLUMN "price" decimal(10,2) NOT NULL DEFAULT 29.99; 

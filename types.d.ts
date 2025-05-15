@@ -11,6 +11,7 @@ interface Book {
   coverUrl: string;
   videoUrl: string;
   summary: string;
+  price: number;
   createdAt: Date | null;
   video?: string;
   isLoanedBook?: boolean;
@@ -36,6 +37,7 @@ interface BookParams {
   totalCopies: number;
   videoUrl: string;
   summary: string;
+  price: number;
 }
 
 interface BorrowBookParams {
@@ -46,4 +48,15 @@ interface BorrowBookParams {
 interface ReturnBookParams {
   recordId: string;
   bookId: string;
+}
+
+interface BorrowRecord {
+  id: string;
+  userId: string;
+  bookId: string;
+  borrowDate: Date;
+  dueDate: Date;
+  returnDate: Date | null;
+  status: "BORROWED" | "RETURNED";
+  createdAt: Date | null;
 }
