@@ -7,6 +7,7 @@ import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { autoFineOverdues } from "@/lib/admin/actions/autoFine";
+import { autoReleaseHolds } from "@/lib/actions/hold";
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
@@ -32,6 +33,9 @@ const Layout = async ({ children }: { children: ReactNode }) => {
 
     const result = await autoFineOverdues();
     console.log("autoFineOverdues result:", result);
+
+    const rel = await autoReleaseHolds();
+    console.log("autoReleaseHolds released:", rel.released);
   });
 
   return (

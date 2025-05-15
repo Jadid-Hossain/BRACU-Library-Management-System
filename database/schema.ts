@@ -24,6 +24,7 @@ export const FINE_STATUS_ENUM = pgEnum("fine_status", [
   "PAID",
   "WAIVED",
 ]);
+export const HOLD_STATUS_ENUM = pgEnum("hold_status", ["ACTIVE", "EXPIRED"]);
 
 export const users = pgTable("users", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
@@ -87,4 +88,19 @@ export const fines = pgTable("fines", {
     .defaultNow()
     .notNull(),
   paidAt: timestamp("paid_at", { withTimezone: true }),
+});
+
+export const holds = pgTable("holds", {
+  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
+  bookId: uuid("book_id")
+    .references(() => books.id)
+    .notNull(),
+  holdDate: timestamp("hold_date", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  status: HOLD_STATUS_ENUM("status").default("ACTIVE").notNull(),
 });

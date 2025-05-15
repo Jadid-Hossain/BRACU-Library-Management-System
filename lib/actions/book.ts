@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/database/drizzle";
-import { books, borrowRecords, users } from "@/database/schema";
-import { eq, and } from "drizzle-orm";
+import { books, borrowRecords, holds, users } from "@/database/schema";
+import { eq, and, sql } from "drizzle-orm";
 import dayjs from "dayjs";
 
 export const borrowBook = async (params: BorrowBookParams) => {
@@ -16,17 +16,11 @@ export const borrowBook = async (params: BorrowBookParams) => {
       .limit(1);
 
     if (!user) {
-      return {
-        success: false,
-        error: "User not found",
-      };
+      return { success: false, error: "User not found" };
     }
 
     if (user.status !== "APPROVED") {
-      return {
-        success: false,
-        error: "Only approved users can borrow books",
-      };
+      return { success: false, error: "Only approved users can borrow books" };
     }
 
     const [book] = await db
@@ -38,13 +32,29 @@ export const borrowBook = async (params: BorrowBookParams) => {
       .where(eq(books.id, bookId))
       .limit(1);
 
-    if (!book || book.availableCopies <= 0) {
+    if (!book) {
+      return { success: false, error: "Book not found" };
+    }
+
+    const [myHold] = await db
+      .select({ id: holds.id })
+      .from(holds)
+      .where(
+        and(
+          eq(holds.userId, userId),
+          eq(holds.bookId, bookId),
+          eq(holds.status, "ACTIVE"),
+        ),
+      )
+      .limit(1);
+
+    if (book.availableCopies <= 0 && !myHold) {
       return {
         success: false,
         error: "Book is not available for borrowing",
       };
     }
-    // check 48 hours
+
     const createdAt = dayjs(book.createdAt);
     const now = dayjs();
     const cutoff = createdAt.add(2, "day");
@@ -71,14 +81,10 @@ export const borrowBook = async (params: BorrowBookParams) => {
       .limit(1);
 
     if (existingBorrow) {
-      return {
-        success: false,
-        error: "You’ve already borrowed this book",
-      };
+      return { success: false, error: "You’ve already borrowed this book" };
     }
 
     const dueDate = dayjs().add(7, "day").format("YYYY-MM-DD");
-
     const record = await db.insert(borrowRecords).values({
       userId,
       bookId,
@@ -86,21 +92,27 @@ export const borrowBook = async (params: BorrowBookParams) => {
       status: "BORROWED",
     });
 
-    await db
-      .update(books)
-      .set({ availableCopies: book.availableCopies - 1 })
-      .where(eq(books.id, bookId));
+    if (!myHold && book.availableCopies > 0) {
+      await db
+        .update(books)
+        .set({ availableCopies: book.availableCopies - 1 })
+        .where(eq(books.id, bookId));
+    }
+
+    if (myHold) {
+      await db
+        .update(holds)
+        .set({ status: "EXPIRED" })
+        .where(eq(holds.id, myHold.id));
+    }
 
     return {
       success: true,
       data: JSON.parse(JSON.stringify(record)),
     };
   } catch (error) {
-    console.log(error);
-    return {
-      success: false,
-      error: "An error occurred while borrowing the book",
-    };
+    console.error("Borrow book error:", error);
+    return { success: false, error: "An unexpected error occurred" };
   }
 };
 

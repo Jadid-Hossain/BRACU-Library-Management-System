@@ -34,14 +34,22 @@ export default function ReturnBook({ recordId, bookId }: Props) {
 
   return (
     <Button
-      className="book-overview_btn"
+      className="book-overview_btn max-w-[200px] w-full overflow-hidden"
       onClick={handleReturn}
       disabled={returning}
     >
-      <Image src="/icons/return.svg" alt="return" width={20} height={20} />
-      <p className="font-bebas-neue text-xl text-dark-100">
-        {returning ? "Returning..." : "Return Book"}
-      </p>
+      <div className="flex items-center justify-center gap-2 w-full overflow-hidden">
+        <Image
+          src="/icons/book.svg"
+          alt="return"
+          width={20}
+          height={20}
+          className="shrink-0"
+        />
+        <p className="font-bebas-neue text-xl text-dark-100 truncate">
+          {returning ? "Returning..." : "Return Book"}
+        </p>
+      </div>
     </Button>
   );
 }
