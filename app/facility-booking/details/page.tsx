@@ -18,9 +18,9 @@ export default function FacilityDetails() {
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-8 h-8">
-                <Image
-                  src="/individual-pod-icon.png"
+              <div className="w-8 h-8 text-blue-600">
+                <img
+                  src="/individual-pod-icon.svg"
                   alt="Individual Study Pod Icon"
                   width={32}
                   height={32}
@@ -43,7 +43,7 @@ export default function FacilityDetails() {
           </div>
           <div className="md:w-1/2">
             <Image
-              src="/study-pod-image.jpg"
+              src="/study-pod-image.png"
               alt="Individual Study Pod"
               width={600}
               height={400}
@@ -58,7 +58,7 @@ export default function FacilityDetails() {
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="md:w-1/2">
             <Image
-              src="/group-room-image.jpg"
+              src="/group-room-image.png"
               alt="Group Discussion Room"
               width={600}
               height={400}
@@ -67,9 +67,9 @@ export default function FacilityDetails() {
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-8 h-8">
-                <Image
-                  src="/group-room-icon.png"
+              <div className="w-8 h-8 text-blue-600">
+                <img
+                  src="/group-room-icon.svg"
                   alt="Group Discussion Room Icon"
                   width={32}
                   height={32}

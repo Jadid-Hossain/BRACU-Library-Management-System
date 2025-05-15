@@ -5,6 +5,8 @@
 @layer base {
   :root {
     --radius: 0.5rem;
+    --primary-color: #003366;
+    --secondary-color: #0056b3;
   }
 
   .hide-scrollbar::-webkit-scrollbar {
@@ -24,6 +26,10 @@
 
   .hide-scrollbar::-webkit-scrollbar-thumb:hover {
     background: transparent;
+  }
+
+  body {
+    @apply bg-gray-50;
   }
 }
 

@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 export default function Membership() {
   return (
     <div className="min-h-screen bg-white py-12">
@@ -13,14 +15,14 @@ export default function Membership() {
           </p>
 
           <div className="flex gap-4 mb-8">
-            <a 
-              href="/membership/signup" 
+            <Link
+              href="/sign-up" 
               className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
             >
               Student Account
-            </a>
+            </Link>
             <a 
-              href="https://forms.google.com/dummy-form" 
+              href="https://docs.google.com/forms/d/e/1FAIpQLSe8QaEbjNqjDHwS15GDDsatFxzhqjrFQBuVbtNRff0t8Ml7QA/viewform" 
               target="_blank"
               rel="noopener noreferrer"
               className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition-colors"
