@@ -1,4 +1,3 @@
-// app/(root)/search/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -26,7 +25,6 @@ export default function SearchPage() {
   const [genreFilter, setGenreFilter] = useState("All");
   const [onlyAvailable, setOnlyAvailable] = useState(false);
 
-  // Fetch books & derive genres once
   useEffect(() => {
     fetch("/api/books")
       .then((res) => res.json())
@@ -36,7 +34,6 @@ export default function SearchPage() {
       });
   }, []);
 
-  // Re-compute results whenever any filter changes
   useEffect(() => {
     let filtered = books;
 
@@ -65,7 +62,6 @@ export default function SearchPage() {
       <h1 className="text-2xl font-semibold mb-6 text-gray-200">
         Search Books
       </h1>
-
       {/* Search + filters */}
       <div className="flex flex-col md:flex-row items-start gap-4 mb-8 w-full max-w-7xl mx-auto">
         {/* search input */}
@@ -76,7 +72,6 @@ export default function SearchPage() {
           placeholder="Type title or author…"
           className="flex-1 block w-full p-4 border border-gray-300 rounded"
         />
-
         {/* genre dropdown */}
         <select
           value={genreFilter}
@@ -90,8 +85,6 @@ export default function SearchPage() {
             </option>
           ))}
         </select>
-
-        {/* availability checkbox */}
         <label className="flex items-center gap-2 text-gray-100">
           <input
             type="checkbox"
@@ -102,8 +95,7 @@ export default function SearchPage() {
           Only show available
         </label>
       </div>
-
-      {/* Results */}
+      // Results
       {search.trim() === "" && !onlyAvailable && genreFilter === "All" ? (
         <p className="text-gray-500">Start typing or choose a filter above.</p>
       ) : results.length > 0 ? (

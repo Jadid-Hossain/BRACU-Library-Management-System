@@ -34,14 +34,19 @@ export const adminSideBarLinks = [
     text: "Borrow Records",
   },
   {
-    img: "/icons/admin/user.svg",
-    route: "/admin/account-requests",
-    text: "Account Requests",
-  },
-  {
     img: "/icons/admin/message.svg",
     route: "/admin/contact-messages",
     text: "Contact Messages",
+  },
+  {
+    img: "/icons/admin/message.svg",
+    route: "/admin/research-queries",
+    text: "Admin Queries",
+  },
+  {
+    img: "/icons/admin/bookmark.svg",
+    route: "/admin/similarity-check",
+    text: "Similarity Check",
   },
 ];
 

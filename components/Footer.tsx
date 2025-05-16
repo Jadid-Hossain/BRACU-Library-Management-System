@@ -1,9 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Facebook, Youtube } from 'lucide-react';
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { Facebook, Youtube } from "lucide-react";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <footer className="bg-[var(--primary-color)] text-white py-8">
       <div className="max-w-7xl mx-auto px-4">
@@ -12,8 +17,10 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-bold mb-4">AYESHA ABED LIBRARY</h3>
             <p className="text-sm">
-              8th and 9th floor, A Block, BRACU<br />
-              kha-208, 1 Bir Uttam Rafiqul Islam Ave,<br />
+              8th and 9th floor, A Block, BRACU
+              <br />
+              kha-208, 1 Bir Uttam Rafiqul Islam Ave,
+              <br />
               Dhaka 1212
             </p>
           </div>
@@ -32,9 +39,15 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-bold mb-4">SERVICES</h3>
             <ul className="text-sm space-y-2">
-              <li><Link href="/facility-booking/details">Facility Booking</Link></li>
-              <li><Link href="/membership">Library Membership Activation</Link></li>
-              <li><Link href="/similarity-check">Similarity Check</Link></li>
+              <li>
+                <Link href="/facility-booking/details">Facility Booking</Link>
+              </li>
+              <li>
+                <Link href="/membership">Library Membership Activation</Link>
+              </li>
+              <li>
+                <Link href="/similarity-check">Similarity Check</Link>
+              </li>
             </ul>
 
             <div className="mt-6">
@@ -63,4 +76,4 @@ export default function Footer() {
       </div>
     </footer>
   );
-} 
+}

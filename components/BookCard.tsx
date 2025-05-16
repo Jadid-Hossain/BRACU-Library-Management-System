@@ -1,4 +1,3 @@
-// components/BookCard.tsx
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -6,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import BookCover from "@/components/BookCover";
 import { cn } from "@/lib/utils";
 
-// using global Book type (includes isLoanedBook and daysLeft)
 type Props = Book;
 
 export default function BookCard({

@@ -39,7 +39,7 @@ interface Props {
     universityId: number;
     universityCard: string;
     status: "PENDING" | "APPROVED" | "REJECTED";
-    role: "USER" | "ADMIN";
+    role: "USER" | "ADMIN" | "FACULTY";
   };
 }
 
@@ -190,6 +190,7 @@ export default function AdminUserEdit({ initialUser }: Props) {
                     >
                       <option value="USER">USER</option>
                       <option value="ADMIN">ADMIN</option>
+                      <option value="ADMIN">FACULTY</option>
                     </select>
                   </FormControl>
                   <FormMessage />
